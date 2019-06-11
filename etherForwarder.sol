@@ -8,9 +8,7 @@ contract ERC20Interface {
 contract etherForwarder {
 
   address payable public ownerAddress;
-  event ForwarderDeposited(address from, uint value, bytes data);
-  event TokensFlushed(address tokenContractAddress, address paymentRecipientAddress, uint256 value);
-  
+
   constructor() public {
     ownerAddress = msg.sender;
   }
@@ -31,15 +29,13 @@ contract etherForwarder {
       revert();
     }
 
-    emit ForwarderDeposited(msg.sender, msg.value, msg.data);
-
   }
   
   function changeOwner(address payable newOwnerAddress) public onlyOwner {
       ownerAddress = newOwnerAddress;
   }
 
-  function flushTokens(address tokenContractAddress, address paymentRecipientAddress, uint256 amountToSend) public onlyOwner {
+  function transferTokens(address tokenContractAddress, address paymentRecipientAddress, uint256 amountToSend) public onlyOwner {
 
     ERC20Interface instance = ERC20Interface(tokenContractAddress);
     address forwarderAddress = address(this);
@@ -53,11 +49,9 @@ contract etherForwarder {
       revert();
     }
 
-    emit TokensFlushed(tokenContractAddress, paymentRecipientAddress, amountToSend);
-
   }
 
-  function flush() public {
+  function withdrawEther() public {
 
     uint256 balance = address(this).balance;
 
